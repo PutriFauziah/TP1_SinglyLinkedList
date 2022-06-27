@@ -1,0 +1,226 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct karyawan{
+    int employeeID;
+	char name[30];
+	char birthPlace[30];
+	char date[10];
+	char status[50]; 
+	struct karyawan *next; 
+}*head, *tail, *current;
+
+typedef struct karyawan *node;
+
+void pushHead(int employeeID, char name[], char birthPlace[], char date[], char status[]){
+    current = (struct karyawan*)malloc(sizeof(struct karyawan));
+    current->employeeID = employeeID;
+	strcpy(current->name, name); 
+	strcpy(current->birthPlace, birthPlace);
+	strcpy(current->date, date);
+	strcpy(current->status, status);
+
+	if(head == NULL){
+		head = tail = current;
+	}else{ 
+		current->next = head;
+		head = current;
+	}
+}
+
+void pushTail(int employeeID, char name[], char birthPlace[], char date[], char status[]){
+    current = (struct karyawan*)malloc(sizeof(struct karyawan));
+    current->employeeID = employeeID;
+	strcpy(current->name, name); 
+	strcpy(current->birthPlace, birthPlace);
+	strcpy(current->date, date);
+	strcpy(current->status, status);
+
+	if(head == NULL){ 
+		head = tail = current; 
+	}
+	else{
+		tail->next = current;
+		tail = current;
+	}
+	tail->next = NULL;
+}
+
+void insert(int employeeID, char name[], char birthPlace[], char date[], char status[]){
+   	if(head==NULL){
+		pushHead(employeeID, name, birthPlace, date, status);
+		
+	}else if(employeeID < head->employeeID){
+		pushHead(employeeID, name, birthPlace, date, status);
+		
+	}else if(employeeID > tail->employeeID){
+		pushTail(employeeID, name, birthPlace, date, status);
+		
+	}else{
+		current = (struct karyawan*)malloc(sizeof(struct karyawan));
+		current->employeeID = employeeID;
+	    strcpy(current->name, name); 
+	    strcpy(current->birthPlace, birthPlace);
+	    strcpy(current->date, date);
+	    strcpy(current->status, status);
+
+		node temp=head;
+		while(temp!=NULL && temp->employeeID < current->employeeID){
+			temp=temp->next;
+		}
+	    current->next=temp->next;
+		current->next=temp;
+
+		temp->next=current;
+	}
+}
+
+void popHead(){
+	current=head;
+	if(head==NULL){
+		printf("No data");
+		
+	}else if(head==tail){
+		head=tail=NULL;
+		free(current);
+		
+	}else{
+		head=head->next;
+		free(current);
+	}
+}
+
+void popTail(){
+	if(head==NULL){
+		printf("No data");
+
+	}else if(head==tail){
+		head=tail=NULL;
+		free(current);
+	
+	}else{
+		struct karyawan *temp=head;
+		while(temp->next!=tail){
+			temp=temp->next;
+		}
+		current=tail;
+		tail=temp;
+		free(current);
+		tail->next=NULL;
+	}
+}
+
+void deleteIndex(int employeeID){
+	if(head==NULL){
+		printf("No data");
+	
+	}else if(head->employeeID==employeeID){
+		popHead();
+	
+	}else if(tail->employeeID==employeeID){
+		popTail();
+
+	}else{
+		node temp=head;
+		while(temp->next->employeeID!=employeeID && temp!=tail){
+			temp=temp->next;
+		}
+		current=temp->next;
+		temp->next=temp->next->next;
+		free(current);
+	}
+}
+  
+void popAll(){
+	while(head!=NULL){
+		popHead();
+	}
+	printf("Data Sukses Dihapus");
+}
+
+void print(){
+	current=head;
+	int x = 1;
+	if(current!=NULL){
+	    
+        printf("\n===== DATA KARYAWAN =====\n");
+		while(current!=NULL){
+			printf("No. %d | Employee ID : %d | Nama  : %s  | Tempat Lahir : %s | Tanggal Lahir : %s  | Jabatan : %s  \n", 	x,
+			current->employeeID, current->name, current->birthPlace, current->date, current->status);
+			
+			current=current->next;
+			
+		    x++;
+		}
+	}else{
+		printf("No Data\n");
+	}
+}
+
+void main(){
+    int choice;
+    int employeeID;
+	char name[30];
+	char birthPlace[30];
+	char date[10];
+	char status[50]; 
+
+    do{
+        printf("\n=== DATA KARYAWAN ===\n");
+        printf("1. Input Data Karyawan\n");
+        printf("2. Lihat Data Karyawan\n");
+        printf("3. Hapus Data Karyawan\n");
+        printf("4. Hapus Semua Data Karyawan\n");
+        printf("5. Keluar\n");
+    
+        do{
+            printf("Input Pilihan Anda  : ");
+            scanf("%d", &choice);
+            printf("\n==========================\n");
+        } while(choice<1 || choice>5);
+        
+        switch(choice){
+            case 1:
+                printf("Employee ID \t: ");
+                scanf("%d", &employeeID);
+                printf("Nama Lengkap \t: ");
+                scanf("%s", name);
+                printf("Tempat Lahir \t: ");
+                scanf("%s", birthPlace);
+                printf("Tanggal Lahir (dd/mm/yyyy) : ");
+                scanf("%s", date);
+                printf("Jabatan \t: ");
+                scanf("%s", status);
+                
+                insert(employeeID, name, birthPlace, date, status);
+                
+                break;
+                
+            case 2:
+                print();
+                
+                break;
+            
+            case 3:
+                print();
+                printf("\n=====================\n");
+                printf("Employee ID yang akan Dihapus : ");
+                scanf("%d", &employeeID);
+                
+                deleteIndex(employeeID);
+                print();
+                
+                break;
+                
+            case 4:
+                popAll();
+            
+        }
+    }while (choice != 5);
+
+	getchar();
+}
+
+
+
